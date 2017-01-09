@@ -6,14 +6,19 @@
 </head>
 <body>
 
-<h1>Upload a csv file!</h1>
+  <h1>Upload a csv file!</h1>
 
-<div>
-  <form>
-    <input type="file" accept="text/csv">
-    <input type="submit">
-  </form>
-</div>
+  <div>
+    <form>
+      <input type="file" accept="text/csv">
+      <input type="submit">
+    </form>
+  </div>
+
+  <h2>Results:</h2>
+  <div id="result"></div>
+
+</body>
 
 <script>
 
@@ -53,6 +58,10 @@
           setTimeout(function() {
             checkTask(taskId)
           }, 1000)
+        } else if(data.result.state === 'FAILURE') {
+          alert('Failure occurred')
+        } else if(data.result.state === 'SUCCESS') {
+          $("#result").html('<div>' + JSON.stringify(data.result.result) + '</div>')
         }
 
     }).catch(function(error) {
@@ -62,5 +71,4 @@
 
 </script>
 
-</body>
 </html>
