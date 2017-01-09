@@ -32,4 +32,4 @@ $ python server.py
 $ celery -A server.celery worker --loglevel=info
 ```
 
-Check out the blog post here.
+Check out the blog post [here](http://suzannewang.com/celery-rabbitmq-tutorial/).
