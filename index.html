@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Celery Example</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+
+<h1>Upload a csv file!</h1>
+
+<div>
+  <form>
+    <input type="file" accept="text/csv">
+    <input type="submit">
+  </form>
+</div>
+
+<script>
+
+  $("form").on("submit", processForm);
+
+  function processForm(e) {
+      e.preventDefault();
+      
+      var data = new FormData();
+      var input = document.querySelector('input[type="file"]')
+      console.log('in processForm', input.files[0])
+      data.append('file', input.files[0])
+      
+      window.fetch('http://localhost:8889/upload', {
+          method: 'POST',
+          body: data
+      }).then(function(response) {
+          return response.json()
+          // status_url = request.getResponseHeader('Location');
+          // update_progress(status_url, nanobar, div[0]);
+      }).then(function(data) {
+          checkTask(data.task_id)
+      }).catch(function(error) {
+          console.log('Error', error);
+      });  
+  }
+
+  function checkTask(taskId) {
+    window.fetch('http://localhost:8889/tasks/' + taskId, {
+        method: 'POST',
+        body: data
+    }).then(function(response) {
+        return response.json()
+        // status_url = request.getResponseHeader('Location');
+        // update_progress(status_url, nanobar, div[0]);
+    }).then(function(data) {
+        console.log(data)
+        
+    }).catch(function(error) {
+        console.log('Error', error);
+    });  
+  }
+
+</script>
+
+</body>
+</html>
