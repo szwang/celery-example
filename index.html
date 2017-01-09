@@ -42,16 +42,14 @@
   }
 
   function checkTask(taskId) {
-    window.fetch('http://localhost:8889/tasks/' + taskId, {
-        method: 'POST',
-        body: data
-    }).then(function(response) {
+    window.fetch('http://localhost:8889/task/' + taskId 
+    ).then(function(response) {
         return response.json()
         // status_url = request.getResponseHeader('Location');
         // update_progress(status_url, nanobar, div[0]);
     }).then(function(data) {
         console.log(data)
-        
+
     }).catch(function(error) {
         console.log('Error', error);
     });  

@@ -39,7 +39,12 @@ def get_csv_info():
 
     return make_response(jsonify({'task_id': file_task.task_id}))
 
+@app.route('/task/<task_id>', methods=['GET'])
+def check_task_status(task_id):
+    # task_id = request.args.get('task_id')
+    print task_id
 
+    return make_response(jsonify({}))
 
 # Celery tasks
 @celery.task(bind=True)
@@ -60,8 +65,6 @@ def compute_properties(df):
     properties['num_columns'] = len(df.columns)
 
     properties['column_data'] = compute_column_data(df)
-
-    print properties
 
     return properties
 
