@@ -97,6 +97,13 @@ def compute_column_data(df):
             info['stddev'] = np.std(col)
             info['min'] = col.min()
             info['max'] = col.max()
+        else:
+            unique_values = col.unique().tolist()
+            print len(unique_values), len(df)
+            if len(unique_values) < len(df):
+                info['unique_values'] = unique_values
+            else:
+                info['unique_values'] = True
 
         result.append(info)
 
