@@ -11,10 +11,10 @@ $ brew install rabbitmq
 Run the server as a background process and set up user and vhost:
 
 ```bash
-$ sudo rabbitmq-server --detached
-$ sudo rabbitmqctl add_user admin password
-$ sudo rabbitmqctl add_vhost test
-$ sudo rabbitmqctl set_permissions -p test admin ".*" ".*" ".*"
+$ sudo rabbitmq-server -detached
+$ sudo rabbitmqctl add_user [USERNAME] [PASSWORD]
+$ sudo rabbitmqctl add_vhost [VHOST_NAME]
+$ sudo rabbitmqctl set_permissions -p [VHOST_NAME] [USERNAME] ".*" ".*" ".*"
 ```
 
 Activate the virtual env and get the dependencies:
