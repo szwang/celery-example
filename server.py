@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app)
 
 app.config['CELERY_BROKER_URL'] = 'amqp://admin:password@localhost/test'
-# app.config['CELERY_RESULT_BACKEND'] = 'amqp://localhost:5672/0'
+app.config['CELERY_RESULT_BACKEND'] = 'amqp://admin:password@localhost/test'
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
@@ -44,14 +44,27 @@ def check_task_status(task_id):
     # task_id = request.args.get('task_id')
     print task_id
 
-    return make_response(jsonify({}))
+    task = csv_info_task.AsyncResult(task_id)
+    state = task.state
+    response = {}
+    response['state'] = state
 
-# Celery tasks
+    if state == states.SUCCESS:
+        response['result'] = task.get()
+    elif state == states.FAILURE:
+        try:
+            response['error'] = task.info.get('error')
+        except Exception as e:
+            response['error'] = 'Unknown error occurred'
+        
+    return make_response(jsonify({'result': response}))
+
+
 @celery.task(bind=True)
 def csv_info_task(self, path):
 
     #read csv
-    self.update_state(state=states.PENDING, meta={'desc': 'Computing dataset properties'})
+    self.update_state(state=states.PENDING)
 
     df = pd.read_csv(path)
     result = compute_properties(df)

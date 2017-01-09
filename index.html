@@ -49,6 +49,11 @@
         // update_progress(status_url, nanobar, div[0]);
     }).then(function(data) {
         console.log(data)
+        if(data.result.state === 'PENDING') {
+          setTimeout(function() {
+            checkTask(taskId)
+          }, 1000)
+        }
 
     }).catch(function(error) {
         console.log('Error', error);
