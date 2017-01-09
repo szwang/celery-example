@@ -29,7 +29,6 @@
       
       var data = new FormData();
       var input = document.querySelector('input[type="file"]')
-      console.log('in processForm', input.files[0])
       data.append('file', input.files[0])
       
       window.fetch('http://localhost:8889/upload', {
@@ -37,8 +36,6 @@
           body: data
       }).then(function(response) {
           return response.json()
-          // status_url = request.getResponseHeader('Location');
-          // update_progress(status_url, nanobar, div[0]);
       }).then(function(data) {
           checkTask(data.task_id)
       }).catch(function(error) {
@@ -47,21 +44,19 @@
   }
 
   function checkTask(taskId) {
+    console.log('Checking Celery task')
     window.fetch('http://localhost:8889/task/' + taskId 
     ).then(function(response) {
         return response.json()
-        // status_url = request.getResponseHeader('Location');
-        // update_progress(status_url, nanobar, div[0]);
     }).then(function(data) {
-        console.log(data)
-        if(data.result.state === 'PENDING') {
+        if(data.state === 'PENDING') {
           setTimeout(function() {
             checkTask(taskId)
           }, 1000)
-        } else if(data.result.state === 'FAILURE') {
+        } else if(data.state === 'FAILURE') {
           alert('Failure occurred')
-        } else if(data.result.state === 'SUCCESS') {
-          $("#result").html('<div>' + JSON.stringify(data.result.result) + '</div>')
+        } else if(data.state === 'SUCCESS') {
+          $("#result").html('<div>' + JSON.stringify(data.result) + '</div>')
         }
 
     }).catch(function(error) {

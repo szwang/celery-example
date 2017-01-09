@@ -6,9 +6,6 @@ from flask_cors import CORS, cross_origin
 import numpy as np
 import pandas as pd
 
-import logging
-logger = logging.getLogger(__name__)
-
 
 app = Flask(__name__)
 CORS(app)
@@ -20,7 +17,7 @@ celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 @app.route('/upload', methods=['POST'])
-def get_csv_info():
+def upload():
     file_obj = request.files.get('file')
     file_name = file_obj.filename
 
@@ -35,16 +32,14 @@ def get_csv_info():
 
     file_obj.close()
 
-    file_task = csv_info_task.apply_async(args=[path])
+    file_task = read_csv_task.apply_async(args=[path])
 
     return make_response(jsonify({'task_id': file_task.task_id}))
 
 @app.route('/task/<task_id>', methods=['GET'])
 def check_task_status(task_id):
-    # task_id = request.args.get('task_id')
-    print task_id
 
-    task = csv_info_task.AsyncResult(task_id)
+    task = read_csv_task.AsyncResult(task_id)
     state = task.state
     response = {}
     response['state'] = state
@@ -57,13 +52,12 @@ def check_task_status(task_id):
         except Exception as e:
             response['error'] = 'Unknown error occurred'
         
-    return make_response(jsonify({'result': response}))
+    return make_response(jsonify(response))
 
 
 @celery.task(bind=True)
-def csv_info_task(self, path):
+def read_csv_task(self, path):
 
-    #read csv
     self.update_state(state=states.PENDING)
 
     df = pd.read_csv(path)
@@ -77,11 +71,11 @@ def compute_properties(df):
     properties['num_rows'] = len(df)
     properties['num_columns'] = len(df.columns)
 
-    properties['column_data'] = compute_column_data(df)
+    properties['column_data'] = get_column_data(df)
 
     return properties
 
-def compute_column_data(df):
+def get_column_data(df):
     result = []
 
     for c in df:
